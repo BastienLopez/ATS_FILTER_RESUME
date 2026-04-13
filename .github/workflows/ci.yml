@@ -30,8 +30,8 @@ jobs:
         run: |
           OXIDE_VERSION=$(node -p "require('./node_modules/@tailwindcss/oxide/package.json').version")
           LIGHTNINGCSS_VERSION=$(node -p "require('./node_modules/lightningcss/package.json').version")
-          npm install --no-save @tailwindcss/oxide-linux-x64-gnu@${OXIDE_VERSION}
-          npm install --no-save lightningcss-linux-x64-gnu@${LIGHTNINGCSS_VERSION}
+          npm install --no-save @tailwindcss/oxide-linux-x64-gnu@${OXIDE_VERSION} lightningcss-linux-x64-gnu@${LIGHTNINGCSS_VERSION}
+          node -e "require('@tailwindcss/oxide'); require('lightningcss'); console.log('native-css-bindings-ok')"
 
       - name: Lint
         run: npm run lint
@@ -71,8 +71,8 @@ jobs:
         run: |
           OXIDE_VERSION=$(node -p "require('./node_modules/@tailwindcss/oxide/package.json').version")
           LIGHTNINGCSS_VERSION=$(node -p "require('./node_modules/lightningcss/package.json').version")
-          npm install --no-save @tailwindcss/oxide-linux-x64-gnu@${OXIDE_VERSION}
-          npm install --no-save lightningcss-linux-x64-gnu@${LIGHTNINGCSS_VERSION}
+          npm install --no-save @tailwindcss/oxide-linux-x64-gnu@${OXIDE_VERSION} lightningcss-linux-x64-gnu@${LIGHTNINGCSS_VERSION}
+          node -e "require('@tailwindcss/oxide'); require('lightningcss'); console.log('native-css-bindings-ok')"
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
@@ -113,8 +113,8 @@ jobs:
         run: |
           OXIDE_VERSION=$(node -p "require('./node_modules/@tailwindcss/oxide/package.json').version")
           LIGHTNINGCSS_VERSION=$(node -p "require('./node_modules/lightningcss/package.json').version")
-          npm install --no-save @tailwindcss/oxide-linux-x64-gnu@${OXIDE_VERSION}
-          npm install --no-save lightningcss-linux-x64-gnu@${LIGHTNINGCSS_VERSION}
+          npm install --no-save @tailwindcss/oxide-linux-x64-gnu@${OXIDE_VERSION} lightningcss-linux-x64-gnu@${LIGHTNINGCSS_VERSION}
+          node -e "require('@tailwindcss/oxide'); require('lightningcss'); console.log('native-css-bindings-ok')"
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
