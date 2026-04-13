@@ -1,0 +1,73 @@
+{
+  "name": "ats-filter-resume",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "clean": "node -e \"const fs=require('fs');['.next','test-results','playwright-report','coverage','tsconfig.tsbuildinfo'].forEach((p)=>{try{fs.rmSync(p,{recursive:true,force:true});}catch(_){}})\"",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "typecheck": "tsc --noEmit",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "npm run test:unit && npm run test:integration && npm run test:ui",
+    "test:unit": "vitest run dev/qa/unit",
+    "test:integration": "vitest run dev/qa/integration",
+    "test:ui": "vitest run dev/qa/ui",
+    "test:coverage": "vitest run --coverage",
+    "fixtures:generate": "tsx dev/tools/scripts/generate-fixtures.ts",
+    "test:e2e": "npm run fixtures:generate && playwright install chromium && playwright test",
+    "test:e2e:headed": "npm run fixtures:generate && playwright install chromium && playwright test --headed",
+    "prepare": "husky"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.577.0",
+    "mammoth": "^1.12.0",
+    "nanoid": "^5.1.7",
+    "next": "^16.2.3",
+    "pdf-parse": "^2.4.5",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "react-hook-form": "^7.71.2",
+    "tailwind-merge": "^3.5.0",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.58.2",
+    "@tailwindcss/postcss": "^4",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/node": "^20",
+    "@types/pdf-parse": "^1.1.5",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@vitest/coverage-v8": "^4.1.0",
+    "docx": "^9.6.1",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.0",
+    "husky": "^9.1.7",
+    "jsdom": "^29.0.0",
+    "lint-staged": "^16.4.0",
+    "playwright": "^1.58.2",
+    "prettier": "^3.8.1",
+    "prettier-plugin-tailwindcss": "^0.7.2",
+    "start-server-and-test": "^2.1.5",
+    "tailwindcss": "^4",
+    "tsx": "^4.21.0",
+    "typescript": "^5",
+    "vitest": "^4.1.0"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx,mjs,cjs}": [
+      "eslint --fix"
+    ],
+    "*.{json,md,css}": [
+      "prettier --write"
+    ]
+  }
+}
