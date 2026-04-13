@@ -20,9 +20,9 @@ export const metadata: Metadata = {
     "Analysez la compatibilite ATS de votre CV, comprenez les blocages et recevez des recommandations concretes.",
   metadataBase: new URL("https://ats-filter-resume.local"),
   icons: {
-    icon: "/icon.svg",
-    shortcut: "/icon.svg",
-    apple: "/icon.svg",
+    icon: "/favicon.png",
+    shortcut: "/favicon.png",
+    apple: "/favicon.png",
   },
   openGraph: {
     title: "ATS Filter Resume",
