@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { CvDropzone } from "@/features/analysis/components/cv-dropzone";
+import { runClientSideAnalysis } from "@/features/analysis/services/client-analysis";
 import type { AnalysisReport } from "@/types/analysis";
 
 const optionalJobDescriptionSchema = z
@@ -75,11 +76,6 @@ export function AnalysisForm() {
   const onSubmit = form.handleSubmit(async (values) => {
     setApiError(null);
 
-    if (serverAnalysisDisabled) {
-      setApiError("L'analyse serveur est desactivee sur la version GitHub Pages statique.");
-      return;
-    }
-
     if (!selectedFile) {
       setFileError("Selectionnez un CV PDF ou DOCX valide avant de lancer l'analyse.");
       return;
@@ -88,6 +84,17 @@ export function AnalysisForm() {
     setFileError(null);
     setIsSubmitting(true);
     try {
+      if (serverAnalysisDisabled) {
+        const payload = await runClientSideAnalysis({
+          file: selectedFile,
+          jobDescription: values.jobDescription ?? "",
+        });
+
+        sessionStorage.setItem(`ats-report-${payload.reportId}`, JSON.stringify(payload.report));
+        router.push(`/resultats?reportId=${payload.reportId}`);
+        return;
+      }
+
       const body = new FormData();
       body.append("cv", selectedFile);
       body.append("jobDescription", values.jobDescription ?? "");
@@ -105,8 +112,12 @@ export function AnalysisForm() {
 
       sessionStorage.setItem(`ats-report-${payload.reportId}`, JSON.stringify(payload.report));
       router.push(`/resultats/${payload.reportId}`);
-    } catch {
-      setApiError("Erreur reseau temporaire. Verifiez votre connexion puis relancez.");
+    } catch (reason) {
+      if (reason instanceof Error && reason.message) {
+        setApiError(reason.message);
+      } else {
+        setApiError("Erreur reseau temporaire. Verifiez votre connexion puis relancez.");
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -214,10 +225,9 @@ export function AnalysisForm() {
           type="submit"
           size="lg"
           loading={isSubmitting}
-          disabled={serverAnalysisDisabled}
           className="w-full sm:w-auto"
         >
-          {serverAnalysisDisabled ? "Analyse indisponible sur GitHub Pages" : "Analyser mon CV"}
+          {serverAnalysisDisabled ? "Analyser mon CV (GitHub Pages)" : "Analyser mon CV"}
         </Button>
       </form>
 
@@ -225,7 +235,7 @@ export function AnalysisForm() {
         <Alert
           title="Mode statique GitHub Pages"
           variant="info"
-          description="Le deploy GitHub Pages publie une version statique de presentation. Utilisez l'execution serveur pour lancer une analyse complete."
+          description="Cette version execute l'analyse directement dans votre navigateur (sans appel serveur)."
         />
       ) : null}
 
