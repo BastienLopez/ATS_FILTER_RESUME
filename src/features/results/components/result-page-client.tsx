@@ -26,46 +26,52 @@ export function ResultPageClient({ reportId }: ResultPageClientProps) {
   useEffect(() => {
     let mounted = true;
     const storageKey = `ats-report-${reportId}`;
-    const cached = sessionStorage.getItem(storageKey);
 
-    if (cached) {
-      try {
-        const parsed = JSON.parse(cached) as AnalysisReport;
-        if (mounted && parsed.id === reportId) {
-          setReport(parsed);
-          setIsLoading(false);
-          return;
+    async function loadReport(): Promise<{ report: AnalysisReport; fromCache: boolean } | null> {
+      const cached = sessionStorage.getItem(storageKey);
+
+      if (cached) {
+        try {
+          const parsed = JSON.parse(cached) as AnalysisReport;
+          if (parsed.id === reportId) {
+            return { report: parsed, fromCache: true };
+          }
+        } catch {
+          sessionStorage.removeItem(storageKey);
         }
-      } catch {
-        sessionStorage.removeItem(storageKey);
       }
+
+      const response = await fetch(`/api/reports/${reportId}`);
+      const payload = (await response.json()) as ReportApiResponse;
+      if (!response.ok || !payload.report) {
+        throw new Error(payload.error?.message ?? "Rapport introuvable ou expire.");
+      }
+      if (!mounted) {
+        return null;
+      }
+      return { report: payload.report, fromCache: false };
     }
 
-    async function loadFromApi() {
-      try {
-        const response = await fetch(`/api/reports/${reportId}`);
-        const payload = (await response.json()) as ReportApiResponse;
-        if (!response.ok || !payload.report) {
-          throw new Error(payload.error?.message ?? "Rapport introuvable ou expire.");
+    void loadReport()
+      .then((loadedReport) => {
+        if (!mounted || !loadedReport) {
+          return;
         }
+        setReport(loadedReport.report);
+        if (!loadedReport.fromCache) {
+          sessionStorage.setItem(storageKey, JSON.stringify(loadedReport.report));
+        }
+        setIsLoading(false);
+      })
+      .catch((reason: unknown) => {
         if (!mounted) {
           return;
         }
-        setReport(payload.report);
-        sessionStorage.setItem(storageKey, JSON.stringify(payload.report));
-      } catch (reason) {
-        if (mounted) {
-          const message = reason instanceof Error ? reason.message : "Rapport introuvable ou expire.";
-          setError(message);
-        }
-      } finally {
-        if (mounted) {
-          setIsLoading(false);
-        }
-      }
-    }
+        const message = reason instanceof Error ? reason.message : "Rapport introuvable ou expire.";
+        setError(message);
+        setIsLoading(false);
+      });
 
-    void loadFromApi();
     return () => {
       mounted = false;
     };

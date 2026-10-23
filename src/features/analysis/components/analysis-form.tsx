@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ListChecks, Sparkles, ShieldAlert } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 import { DEFAULT_JOB_EXAMPLE_ID, JOB_DESCRIPTION_EXAMPLES } from "@/content/job-examples";
 import { Alert } from "@/components/ui/alert";
@@ -55,7 +55,10 @@ export function AnalysisForm() {
     mode: "onBlur",
   });
 
-  const currentJobDescription = form.watch("jobDescription");
+  const currentJobDescription = useWatch({
+    control: form.control,
+    name: "jobDescription",
+  });
 
   const selectedExample = useMemo(
     () => JOB_DESCRIPTION_EXAMPLES.find((item) => item.id === selectedExampleId) ?? JOB_DESCRIPTION_EXAMPLES[0],
